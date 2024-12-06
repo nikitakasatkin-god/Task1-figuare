@@ -24,6 +24,7 @@ class Rectangle extends Shape{
     }
 
 
+
     @Override
     public String toString(){
         return "Цвет прямоугольника " + super.color + " и его площадь: " + Math.round(area()) + " и его периметр: " + Math.round(perimeter());
