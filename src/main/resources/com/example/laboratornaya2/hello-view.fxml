@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.canvas.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox alignment="CENTER" prefHeight="311.0" prefWidth="355.0" spacing="20.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.laboratornaya2.HelloController">
+    <padding>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+    </padding>
+   <children>
+      <Canvas fx:id="canvas" height="200.0" width="200.0" />
+      <FlowPane prefHeight="30.0" prefWidth="315.0">
+         <children>
+            <FlowPane prefHeight="30.0" prefWidth="315.0">
+               <children>
+                  <Button fx:id="rectangleButton" mnemonicParsing="false" onAction="#m_rectangle" text="Прямуогольник">
+                     <FlowPane.margin>
+                        <Insets left="100.0" />
+                     </FlowPane.margin></Button>
+                  <Label fx:id="rec" />
+               </children>
+            </FlowPane>
+            <FlowPane prefHeight="30.0" prefWidth="315.0">
+               <children>
+                  <Button fx:id="circleButton" mnemonicParsing="false" onAction="#m_circle" prefWidth="103.2" text="Круг">
+                     <FlowPane.margin>
+                        <Insets left="100.0" />
+                     </FlowPane.margin></Button>
+                  <Label fx:id="cir" />
+               </children>
+            </FlowPane>
+            <FlowPane prefHeight="30.0" prefWidth="315.0">
+               <children>
+                  <Button fx:id="ellipseButton" mnemonicParsing="false" onAction="#m_ellipse" prefWidth="103.2" text="Эллипс">
+                     <FlowPane.margin>
+                        <Insets left="100.0" />
+                     </FlowPane.margin></Button>
+                  <Label fx:id="ell" />
+               </children>
+            </FlowPane>
+            <FlowPane prefHeight="30.0" prefWidth="315.0">
+               <children>
+                  <Button fx:id="roundRectangleButton" mnemonicParsing="false" onAction="#m_roundRectangle" prefWidth="182.0" text="Закругленный прямоугольник">
+                     <FlowPane.margin>
+                        <Insets left="60.0" />
+                     </FlowPane.margin></Button>
+                  <Label fx:id="roRec" />
+               </children>
+            </FlowPane>
+            <FlowPane prefHeight="30.0" prefWidth="315.0">
+               <children>
+                  <Button fx:id="squareButton" mnemonicParsing="false" onAction="#m_square" prefWidth="103.2" text="Квадрат">
+                     <FlowPane.margin>
+                        <Insets left="100.0" />
+                     </FlowPane.margin></Button>
+                  <Label fx:id="squ" />
+               </children>
+            </FlowPane>
+         </children>
+      </FlowPane>
+   </children>
+
+
+</VBox>
