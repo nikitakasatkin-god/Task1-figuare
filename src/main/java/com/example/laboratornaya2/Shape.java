@@ -11,6 +11,11 @@ abstract class Shape {
     abstract double perimeter();
     abstract void draw(GraphicsContext gr);
     public abstract String toString();
+    abstract String descriptor();
+
+    public Shape(){
+
+    }
 
     public Shape(Color color){
         this.color = color;

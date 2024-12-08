@@ -5,61 +5,61 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox alignment="CENTER" prefHeight="311.0" prefWidth="355.0" spacing="20.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.laboratornaya2.HelloController">
+<VBox alignment="CENTER" prefHeight="696.0" prefWidth="700.0" spacing="20.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.laboratornaya2.HelloController">
     <padding>
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
     </padding>
    <children>
-      <Canvas fx:id="canvas" height="200.0" width="200.0" />
-      <FlowPane prefHeight="30.0" prefWidth="315.0">
+      <Canvas fx:id="canvas" height="322.0" width="637.0">
+         <VBox.margin>
+            <Insets />
+         </VBox.margin></Canvas>
+      <VBox prefHeight="57.0" prefWidth="660.0">
          <children>
-            <FlowPane prefHeight="30.0" prefWidth="315.0">
+            <HBox prefHeight="32.0" prefWidth="660.0">
                <children>
                   <Button fx:id="rectangleButton" mnemonicParsing="false" onAction="#m_rectangle" text="Прямуогольник">
-                     <FlowPane.margin>
-                        <Insets left="100.0" />
-                     </FlowPane.margin></Button>
-                  <Label fx:id="rec" />
-               </children>
-            </FlowPane>
-            <FlowPane prefHeight="30.0" prefWidth="315.0">
-               <children>
+                     <HBox.margin>
+                        <Insets right="10.0" />
+                     </HBox.margin>
+                  </Button>
                   <Button fx:id="circleButton" mnemonicParsing="false" onAction="#m_circle" prefWidth="103.2" text="Круг">
-                     <FlowPane.margin>
-                        <Insets left="100.0" />
-                     </FlowPane.margin></Button>
-                  <Label fx:id="cir" />
-               </children>
-            </FlowPane>
-            <FlowPane prefHeight="30.0" prefWidth="315.0">
-               <children>
+                     <HBox.margin>
+                        <Insets left="20.0" right="10.0" />
+                     </HBox.margin>
+                  </Button>
                   <Button fx:id="ellipseButton" mnemonicParsing="false" onAction="#m_ellipse" prefWidth="103.2" text="Эллипс">
-                     <FlowPane.margin>
-                        <Insets left="100.0" />
-                     </FlowPane.margin></Button>
-                  <Label fx:id="ell" />
-               </children>
-            </FlowPane>
-            <FlowPane prefHeight="30.0" prefWidth="315.0">
-               <children>
+                     <HBox.margin>
+                        <Insets left="20.0" right="10.0" />
+                     </HBox.margin>
+                  </Button>
                   <Button fx:id="roundRectangleButton" mnemonicParsing="false" onAction="#m_roundRectangle" prefWidth="182.0" text="Закругленный прямоугольник">
-                     <FlowPane.margin>
-                        <Insets left="60.0" />
-                     </FlowPane.margin></Button>
-                  <Label fx:id="roRec" />
-               </children>
-            </FlowPane>
-            <FlowPane prefHeight="30.0" prefWidth="315.0">
-               <children>
+                     <HBox.margin>
+                        <Insets left="20.0" right="10.0" />
+                     </HBox.margin>
+                  </Button>
                   <Button fx:id="squareButton" mnemonicParsing="false" onAction="#m_square" prefWidth="103.2" text="Квадрат">
-                     <FlowPane.margin>
-                        <Insets left="100.0" />
-                     </FlowPane.margin></Button>
-                  <Label fx:id="squ" />
+                     <HBox.margin>
+                        <Insets left="25.0" />
+                     </HBox.margin>
+                  </Button>
                </children>
-            </FlowPane>
+               <VBox.margin>
+                  <Insets />
+               </VBox.margin>
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+            </HBox>
+            <Label fx:id="figure_firstlab" />
          </children>
-      </FlowPane>
+      </VBox>
+      <VBox prefHeight="113.0" prefWidth="660.0">
+         <children>
+            <ListView fx:id="shapeListView" prefHeight="116.0" prefWidth="660.0" />
+            <Label fx:id="proverka_storon" />
+         </children>
+      </VBox>
    </children>
 
 
