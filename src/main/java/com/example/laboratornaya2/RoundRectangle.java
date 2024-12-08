@@ -42,4 +42,9 @@ public class RoundRectangle extends Shape{
     public String descriptor(){
         return null;
     }
+
+    @Override
+    boolean isInside(double clickX, double clickY) {
+        return clickX >= x && clickX <= x + width && clickY >= y && clickY <= y + length;
+    }
 }

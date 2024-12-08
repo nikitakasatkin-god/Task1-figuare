@@ -14,6 +14,11 @@ public class Square extends Shape{
     }
 
     @Override
+    boolean isInside(double clickX, double clickY) {
+        return clickX >= x && clickX <= x + width && clickY >= y && clickY <= y + length;
+    }
+
+    @Override
     double area(){
         return length * width;
     }

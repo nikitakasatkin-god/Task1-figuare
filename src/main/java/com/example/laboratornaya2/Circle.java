@@ -11,6 +11,17 @@ public class Circle extends Shape{
         this.radius = radius;
     }
 
+    public Circle(Color color, double x, double y, double radius) {
+        super(color, x, y);
+        this.radius = radius;
+    }
+
+    boolean isInside(double clickX, double clickY) {
+        double centerX = x + radius;
+        double centerY = y + radius;
+        return Math.pow(clickX - centerX, 2) + Math.pow(clickY - centerY, 2) <= Math.pow(radius, 2);
+    }
+
     @Override
     double area(){
         return Math.PI * radius * radius;

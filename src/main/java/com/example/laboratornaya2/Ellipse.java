@@ -14,6 +14,14 @@ public class Ellipse extends Shape{
     }
 
     @Override
+    boolean isInside(double clickX, double clickY) {
+        double centerX = x + a / 2; // Центр эллипса по X
+        double centerY = y + b / 2; // Центр эллипса по Y
+        // Проверка на нахождение точки внутри эллипса
+        return Math.pow((clickX - centerX) / (a / 2), 2) + Math.pow((clickY - centerY) / (b / 2), 2) <= 1;
+    }
+
+    @Override
     double area(){
         return Math.PI * a * b;
     }
