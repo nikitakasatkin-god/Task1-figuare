@@ -9,6 +9,11 @@ public class Pentagon extends Shape{
     }
 
     @Override
+    boolean isInside(double x, double y) {
+        return false;
+    }
+
+    @Override
     double area(){
         return 0;
     }

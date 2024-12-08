@@ -13,6 +13,16 @@ class Rectangle extends Shape{
         this.width = width;
     }
 
+    public Rectangle(Color color, double x, double y, double width, double height) {
+        super(color, x, y);
+        this.width = width;
+        this.length = height;
+    }
+
+    boolean isInside(double clickX, double clickY) {
+        return clickX >= x && clickX <= x + width && clickY >= y && clickY <= y + length;
+    }
+
     @Override
     double area(){
         return length * width;

@@ -11,13 +11,13 @@ public class ShapeFactory {
             return new Square(Color.RED, 100, 100);
         }
         else if(numberOfSides==3){
-            return new Triangle(Color.BLUE);
+            return new Triangle(Color.BLUE, 200, 100, 250, 200, 150, 200);
         }
         else if(numberOfSides==2){
             return new Angle(Color.YELLOW);
         }
         else if(numberOfSides==1){
-            return new Straight(Color.GREEN);
+            return new Straight(Color.GREEN, 50, 20, 60, 10);
         }
         else if(numberOfSides==0){
             return new Circle(Color.BLACK, 100);
