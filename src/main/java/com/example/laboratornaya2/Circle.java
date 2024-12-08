@@ -31,4 +31,9 @@ public class Circle extends Shape{
         gr.setFill(color);
         gr.fillOval(x, y, radius, radius);
     }
+
+    @Override
+    public String descriptor(){
+        return "Круг";
+    }
 }

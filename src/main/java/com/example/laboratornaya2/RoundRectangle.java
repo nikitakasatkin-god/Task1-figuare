@@ -37,4 +37,9 @@ public class RoundRectangle extends Shape{
         gr.setFill(color);
         gr.fillRoundRect(x, y, length, width, arcWidth, arcHeight);
     }
+
+    @Override
+    public String descriptor(){
+        return null;
+    }
 }

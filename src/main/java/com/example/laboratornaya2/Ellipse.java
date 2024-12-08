@@ -33,4 +33,9 @@ public class Ellipse extends Shape{
         gr.setFill(color);
         gr.fillOval(x, y, a, b);
     }
+
+    @Override
+    public String descriptor(){
+        return null;
+    }
 }

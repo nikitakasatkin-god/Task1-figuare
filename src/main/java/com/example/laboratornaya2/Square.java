@@ -33,4 +33,9 @@ public class Square extends Shape{
         gr.setFill(color);
         gr.fillRect(x, y, length, width);
     }
+
+    @Override
+    public String descriptor(){
+        return "Квадрат";
+    }
 }

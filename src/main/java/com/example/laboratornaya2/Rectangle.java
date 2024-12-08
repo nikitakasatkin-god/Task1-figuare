@@ -35,4 +35,9 @@ class Rectangle extends Shape{
         gr.setFill(color);
         gr.fillRect(x, y, length, width);
     }
+
+    @Override
+    public String descriptor(){
+        return null;
+    }
 }
