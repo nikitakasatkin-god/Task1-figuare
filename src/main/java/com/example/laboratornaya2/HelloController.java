@@ -27,7 +27,7 @@ public class HelloController {
 
     private ShapeFactory shapeFactory = new ShapeFactory();
     public GraphicsContext gc;
-    private List<Momento> selectedShapes = new ArrayList<>();  // Список выделенных фигур
+    private List<Memento> selectedShapes = new ArrayList<>();  // Список выделенных фигур
     private Caretaker caretaker = new Caretaker();
     private List<Shape> shapes = new ArrayList<>();  // Список всех фигур
     private boolean isShiftPressed = false;  // Проверка на множественный выбор
@@ -168,7 +168,7 @@ public class HelloController {
 
         Shape selectedShape = getShapeAt(initialClickX, initialClickY);
         if (selectedShape != null) {
-            Momento temp = new Momento(selectedShape);  // Создаем снимок
+            Memento temp = new Memento(selectedShape);  // Создаем снимок
 
             if (isShiftPressed) {
                 // Если Shift зажат, добавляем фигуру в список выделенных
@@ -193,7 +193,7 @@ public class HelloController {
 
         // Перемещаем все выделенные фигуры
         if (!selectedShapes.isEmpty()) {
-            for (Momento temp : selectedShapes) {
+            for (Memento temp : selectedShapes) {
                 Shape draggedShape = temp.getShape();
                 draggedShape.relocate(draggedShape.getX() + offsetX, draggedShape.getY() + offsetY);  // Перемещаем фигуру
             }
@@ -209,7 +209,7 @@ public class HelloController {
     public void onEnd(MouseEvent event) {
         // Восстанавливаем состояние фигур после завершения перетаскивания
         if (!selectedShapes.isEmpty()) {
-            for (Momento temp : selectedShapes) {
+            for (Memento temp : selectedShapes) {
                 temp.restore();
                 caretaker.saveState(temp);  // Сохраняем текущее состояние
             }
