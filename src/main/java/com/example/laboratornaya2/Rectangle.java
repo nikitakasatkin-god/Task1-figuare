@@ -13,31 +13,9 @@ class Rectangle extends Shape{
         this.width = width;
     }
 
-    public Rectangle(Color color, double x, double y, double width, double height) {
-        super(color, x, y);
-        this.width = width;
-        this.length = height;
-    }
-
-    boolean isInside(double clickX, double clickY) {
-        return clickX >= x && clickX <= x + width && clickY >= y && clickY <= y + length;
-    }
-
     @Override
     double area(){
         return length * width;
-    }
-
-    @Override
-    double perimeter(){
-        return length * 2 + width * 2;
-    }
-
-
-
-    @Override
-    public String toString(){
-        return "Цвет прямоугольника " + super.color + " и его площадь: " + Math.round(area()) + " и его периметр: " + Math.round(perimeter());
     }
 
     @Override
@@ -49,5 +27,10 @@ class Rectangle extends Shape{
     @Override
     public String descriptor(){
         return null;
+    }
+
+    @Override
+    public Shape clone() {
+        return new Rectangle(color, length, width);
     }
 }

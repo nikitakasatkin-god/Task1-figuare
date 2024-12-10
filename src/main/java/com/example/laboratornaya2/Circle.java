@@ -11,40 +11,24 @@ public class Circle extends Shape{
         this.radius = radius;
     }
 
-    public Circle(Color color, double x, double y, double radius) {
-        super(color, x, y);
-        this.radius = radius;
-    }
-
-    boolean isInside(double clickX, double clickY) {
-        double centerX = x + radius;
-        double centerY = y + radius;
-        return Math.pow(clickX - centerX, 2) + Math.pow(clickY - centerY, 2) <= Math.pow(radius, 2);
-    }
-
     @Override
     double area(){
         return Math.PI * radius * radius;
     }
 
     @Override
-    public String toString(){
-        return "Цвет круга " + super.color + " и его площадь: " + Math.round(area())+ " и его периметр: " + Math.round(perimeter());
-    }
-
-    @Override
-    double perimeter(){
-        return 2 * Math.PI * radius;
-    }
-
-    @Override
     public void draw(GraphicsContext gr){
         gr.setFill(color);
-        gr.fillOval(x, y, radius, radius);
+        gr.fillOval(x - radius, y - radius, 2 * radius, radius * 2);
     }
 
     @Override
     public String descriptor(){
         return "Круг";
+    }
+
+    @Override
+    public Shape clone() {
+        return new Circle(color, radius);
     }
 }

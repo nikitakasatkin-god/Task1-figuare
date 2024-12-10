@@ -3,26 +3,22 @@ package com.example.laboratornaya2;
 import javafx.scene.paint.Color;
 
 public class ShapeFactory {
-    public Shape createShape(int numberOfSides){
-        if(numberOfSides==5){
-            return new Pentagon(Color.VIOLET);
-        }
-        else if(numberOfSides==4){
-            return new Square(Color.RED, 100, 100);
-        }
-        else if(numberOfSides==3){
-            return new Triangle(Color.BLUE, 200, 100, 250, 200, 150, 200);
-        }
-        else if(numberOfSides==2){
-            return new Angle(Color.YELLOW);
-        }
-        else if(numberOfSides==1){
-            return new Straight(Color.GREEN, 50, 20, 60, 10);
-        }
-        else if(numberOfSides==0){
-            return new Circle(Color.BLACK, 100);
-        }else{
-            return null;
+    public Shape createShape(String shapeName, Color color, double... params){
+        switch (shapeName){
+            case "Линия":
+                return new Straight(color, params[0]);
+            case "Круг":
+                return new Circle(color, params[0]);
+            case "Квадрат":
+                return new Square(color, params[0]);
+            case "Прямоугольник":
+                return new Rectangle(color, params[0], params[1]);
+            case "Пятиугольник":
+                return new Pentagon(color, params[0]);
+            case "Треугольник":
+                return new Triangle(color, params[0], params[1]);
+            default:
+                throw new IllegalArgumentException("Такой фигуры нет");
         }
     }
 }
