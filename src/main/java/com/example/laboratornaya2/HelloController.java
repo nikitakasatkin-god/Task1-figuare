@@ -39,7 +39,6 @@ public class HelloController {
         gc = canvas.getGraphicsContext2D();
         Rectangle rectangle = new Rectangle(Color.RED, 100, 50);
         shapes.add(rectangle);
-        //context.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         rectangle.draw(gc);
         figure_firstlab.setText(rectangle.toString());
     }
@@ -49,7 +48,6 @@ public class HelloController {
         gc = canvas.getGraphicsContext2D();
         Circle circle = new Circle(Color.BLUE, 100);
         shapes.add(circle);
-        //context.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         circle.draw(gc);
         figure_firstlab.setText(circle.toString());
     }
@@ -59,7 +57,6 @@ public class HelloController {
         gc = canvas.getGraphicsContext2D();
         Ellipse ellipse = new Ellipse(Color.BLACK, 200, 100);
         shapes.add(ellipse);
-        //context.clearRect(0,0, canvas.getWidth(), canvas.getHeight());
         ellipse.draw(gc);
         figure_firstlab.setText(ellipse.toString());
     }
@@ -69,7 +66,6 @@ public class HelloController {
         GraphicsContext context = canvas.getGraphicsContext2D();
         RoundRectangle roundRectangle = new RoundRectangle(Color.YELLOW, 100, 200, 30, 30);
         shapes.add(roundRectangle);
-        //context.clearRect(0,0, canvas.getWidth(), canvas.getHeight());
         roundRectangle.draw(context);
         figure_firstlab.setText(roundRectangle.toString());
     }
@@ -79,7 +75,6 @@ public class HelloController {
         GraphicsContext context = canvas.getGraphicsContext2D();
         Square square = new Square(Color.VIOLET, 100,100);
         shapes.add(square);
-        //context.clearRect(0,0, canvas.getWidth(), canvas.getHeight());
         square.draw(context);
         figure_firstlab.setText(square.toString());
     }
