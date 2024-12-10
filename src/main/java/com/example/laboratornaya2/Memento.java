@@ -2,12 +2,12 @@ package com.example.laboratornaya2;
 
 import javafx.scene.paint.Color;
 
-public class Momento {
+public class Memento {
     private Shape shape;
     private double x, y;
     private Color color;
 
-    public Momento(Shape shape) {
+    public Memento(Shape shape) {
         this.shape = shape;
         this.x = shape.x;
         this.y = shape.y;

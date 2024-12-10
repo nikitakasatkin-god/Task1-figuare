@@ -4,13 +4,13 @@ import java.util.ArrayDeque;
 import java.util.Queue;
 
 public class Caretaker {
-    private Queue<Momento> mementoList = new ArrayDeque<>();
+    private Queue<Memento> mementoList = new ArrayDeque<>();
 
-    public void saveState(Momento state) {
+    public void saveState(Memento state) {
         mementoList.add(state);
     }
 
-    public Momento retrieveState() {
+    public Memento retrieveState() {
         return mementoList.poll();
     }
 }
