@@ -10,59 +10,57 @@
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
     </padding>
    <children>
-      <Canvas fx:id="canvas" height="322.0" onMouseDragged="#onDrag" onMousePressed="#onBegin" onMouseReleased="#onEnd" width="637.0">
+      <Canvas fx:id="canvas" height="322.0" onMouseDragged="#onMouseDragged" onMousePressed="#onMousePressed" onMouseReleased="#onMouseReleased" width="637.0">
          <VBox.margin>
             <Insets />
          </VBox.margin></Canvas>
-      <VBox prefHeight="75.0" prefWidth="660.0">
+      <VBox prefHeight="208.0" prefWidth="660.0">
          <children>
-            <HBox prefHeight="32.0" prefWidth="660.0">
+            <HBox prefHeight="34.0" prefWidth="660.0">
                <children>
-                  <Button fx:id="rectangleButton" mnemonicParsing="false" onAction="#m_rectangle" prefWidth="86.0" text="Прямуогольник">
-                     <HBox.margin>
-                        <Insets right="10.0" />
-                     </HBox.margin>
-                  </Button>
-                  <Button fx:id="circleButton" mnemonicParsing="false" onAction="#m_circle" prefWidth="103.2" text="Круг">
-                     <HBox.margin>
-                        <Insets left="10.0" right="10.0" />
-                     </HBox.margin>
-                  </Button>
-                  <Button fx:id="ellipseButton" mnemonicParsing="false" onAction="#m_ellipse" prefWidth="103.2" text="Эллипс">
-                     <HBox.margin>
-                        <Insets left="10.0" right="10.0" />
-                     </HBox.margin>
-                  </Button>
-                  <Button fx:id="roundRectangleButton" mnemonicParsing="false" onAction="#m_roundRectangle" prefWidth="182.0" text="Закругленный прямоугольник">
-                     <HBox.margin>
-                        <Insets left="10.0" right="10.0" />
-                     </HBox.margin>
-                  </Button>
-                  <Button fx:id="squareButton" mnemonicParsing="false" onAction="#m_square" prefWidth="103.2" text="Квадрат">
+                  <Button fx:id="clearCanv" mnemonicParsing="false" onAction="#clearCanvas" text="Очистить" />
+                  <Button fx:id="buttonCancel" mnemonicParsing="false" onAction="#onUndo" text="Отменить действие">
                      <HBox.margin>
                         <Insets left="10.0" />
                      </HBox.margin>
                   </Button>
                </children>
-               <VBox.margin>
-                  <Insets />
-               </VBox.margin>
-               <opaqueInsets>
-                  <Insets />
-               </opaqueInsets>
+               <padding>
+                  <Insets left="230.0" right="227.0" />
+               </padding>
             </HBox>
-            <Label fx:id="figure_firstlab" />
-            <Button fx:id="clearCanv" mnemonicParsing="false" onAction="#clearCanvas" text="Очистить">
+            <VBox prefHeight="187.0" prefWidth="660.0">
+               <children>
+                  <ListView fx:id="shapeListView" prefHeight="208.0" prefWidth="660.0" />
+                  <Label fx:id="proverka_storon" />
+                  <HBox prefHeight="100.0" prefWidth="200.0">
+                     <children>
+                        <Label text="Введите размер фигуры:" />
+                        <TextField fx:id="sizeInp" maxWidth="-Infinity" prefHeight="26.0" prefWidth="100.0">
+                           <HBox.margin>
+                              <Insets left="10.0" />
+                           </HBox.margin>
+                        </TextField>
+                        <Label text="Выберите цвет:">
+                           <padding>
+                              <Insets left="10.0" />
+                           </padding>
+                        </Label>
+                        <ColorPicker fx:id="colorPicker" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="26.0" prefWidth="116.0">
+                           <HBox.margin>
+                              <Insets left="10.0" />
+                           </HBox.margin>
+                           <padding>
+                              <Insets left="20.0" />
+                           </padding>
+                        </ColorPicker>
+                     </children>
+                  </HBox>
+               </children>
                <VBox.margin>
-                  <Insets left="304.0" />
+                  <Insets top="10.0" />
                </VBox.margin>
-            </Button>
-         </children>
-      </VBox>
-      <VBox prefHeight="113.0" prefWidth="660.0">
-         <children>
-            <ListView fx:id="shapeListView" prefHeight="116.0" prefWidth="660.0" />
-            <Label fx:id="proverka_storon" />
+            </VBox>
          </children>
       </VBox>
    </children>

@@ -4,43 +4,31 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
 public class Square extends Shape{
-    private double length;
-    private double width;
+    private double side;
 
-    public Square(Color color, double length, double width){
+    public Square(Color color, double side){
         super(color);
-        this.length = length;
-        this.width = width;
-    }
-
-    @Override
-    boolean isInside(double clickX, double clickY) {
-        return clickX >= x && clickX <= x + width && clickY >= y && clickY <= y + length;
+        this.side = side;
     }
 
     @Override
     double area(){
-        return length * width;
-    }
-
-    @Override
-    double perimeter(){
-        return length * 2 + width * 2;
-    }
-
-    @Override
-    public String toString(){
-        return "Цвет квадрата " + super.color + " и его площадь: " + Math.round(area()) + " и его периметр: " + Math.round(perimeter());
+        return side * side;
     }
 
     @Override
     public void draw(GraphicsContext gr){
         gr.setFill(color);
-        gr.fillRect(x, y, length, width);
+        gr.fillRect(x, y, side, side);
     }
 
     @Override
     public String descriptor(){
         return "Квадрат";
+    }
+
+    @Override
+    public Shape clone() {
+        return new Square(color, side);
     }
 }

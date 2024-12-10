@@ -1,149 +1,61 @@
 package com.example.laboratornaya2;
 
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.input.KeyCode;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class HelloController {
     @FXML
     private Canvas canvas;
     @FXML
-    private Label figure_firstlab;
-    @FXML
-    private Label proverka_storon;
-    @FXML
     private ListView<String> shapeListView;
+    @FXML
+    private TextField sizeInp;
+    @FXML
+    private ColorPicker colorPicker;
 
     private ShapeFactory shapeFactory = new ShapeFactory();
     public GraphicsContext gc;
-    private List<Memento> selectedShapes = new ArrayList<>();  // Список выделенных фигур
-    private Caretaker caretaker = new Caretaker();
     private List<Shape> shapes = new ArrayList<>();  // Список всех фигур
-    private boolean isShiftPressed = false;  // Проверка на множественный выбор
-    private double initialClickX;  // Начальная координата X при нажатии
-    private double initialClickY;  // Начальная координата Y при нажатии
+    private Stack<Shape> undoStack = new Stack<>();
+    private PriorityQueue<String> shapeQueue = new PriorityQueue<>();
+    private Map<String, Integer> shapeCountMap = new HashMap<>();
 
-    @FXML
-    public void m_rectangle(ActionEvent actionEvent){
-        gc = canvas.getGraphicsContext2D();
-        Rectangle rectangle = new Rectangle(Color.RED, 100, 50);
-        shapes.add(rectangle);
-        rectangle.draw(gc);
-        figure_firstlab.setText(rectangle.toString());
-    }
-
-    @FXML
-    public void m_circle(ActionEvent actionEvent){
-        gc = canvas.getGraphicsContext2D();
-        Circle circle = new Circle(Color.BLUE, 100);
-        shapes.add(circle);
-        circle.draw(gc);
-        figure_firstlab.setText(circle.toString());
-    }
-
-    @FXML
-    public void m_ellipse(ActionEvent actionEvent){
-        gc = canvas.getGraphicsContext2D();
-        Ellipse ellipse = new Ellipse(Color.BLACK, 200, 100);
-        shapes.add(ellipse);
-        ellipse.draw(gc);
-        figure_firstlab.setText(ellipse.toString());
-    }
-
-    @FXML
-    public void m_roundRectangle(ActionEvent actionEvent){
-        GraphicsContext context = canvas.getGraphicsContext2D();
-        RoundRectangle roundRectangle = new RoundRectangle(Color.YELLOW, 100, 200, 30, 30);
-        shapes.add(roundRectangle);
-        roundRectangle.draw(context);
-        figure_firstlab.setText(roundRectangle.toString());
-    }
-
-    @FXML
-    public void m_square(ActionEvent actionEvent){
-        GraphicsContext context = canvas.getGraphicsContext2D();
-        Square square = new Square(Color.VIOLET, 100,100);
-        shapes.add(square);
-        square.draw(context);
-        figure_firstlab.setText(square.toString());
-    }
+    private boolean isDrawing = false;
+    private Shape currentShape = null;
 
     @FXML
     public void initialize() {
         gc = canvas.getGraphicsContext2D();
-
-        ObservableList<String> shapes = FXCollections.observableArrayList(
-                "Пятиугольник", "Квадрат", "Треугольник", "Угол", "Прямая", "Круг"
-        );
-        shapeListView.setItems(shapes);
-
-        shapeListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            drawShape(newValue);
-        });
-
-        // Добавляем обработчики событий мыши и клавиатуры
-        canvas.setOnMousePressed(this::onBegin);
-        canvas.setOnMouseDragged(this::onDrag);
-        canvas.setOnMouseReleased(this::onEnd);
-        canvas.setOnKeyPressed(event -> {
-            if (event.getCode() == KeyCode.SHIFT) {
-                isShiftPressed = true;  // Shift зажат, можно выбирать несколько фигур
-            }
-        });
-        canvas.setOnKeyReleased(event -> {
-            if (event.getCode() == KeyCode.SHIFT) {
-                isShiftPressed = false;  // Shift отпущен
-            }
-        });
-
-        // Устанавливаем фокус на Canvas, чтобы обработчики клавиш работали
-        canvas.setFocusTraversable(true);
-        canvas.requestFocus();
+        shapeListView.setItems(FXCollections.observableArrayList(
+                "Линия", "Круг", "Квадрат", "Прямоугольник", "Пятиугольник", "Треугольник"
+        ));
     }
 
     @FXML
-    private void drawShape(String shapeName) {
-        Shape shape = null;
+    private Shape drawShape(String shapeName, Color color, double size) {
         switch (shapeName) {
-            case "Пятиугольник":
-                shape = shapeFactory.createShape(5);
-                break;
-            case "Квадрат":
-                shape = shapeFactory.createShape(4);
-                break;
-            case "Треугольник":
-                shape = shapeFactory.createShape(3);
-                break;
-            case "Угол":
-                shape = shapeFactory.createShape(2);
-                break;
-            case "Прямая":
-                shape = shapeFactory.createShape(1);
-                break;
+            case "Линия":
+                return shapeFactory.createShape("Линия", color, size);
             case "Круг":
-                shape = shapeFactory.createShape(0);
-                break;
-        }
-
-        if (shape != null) {
-              // Добавляем фигуру в список фигур
-            shape.draw(gc);
-            shapes.add(shape);
-            proverka_storon.setText("Это " + shape.descriptor());
-        } else {
-            proverka_storon.setText("Такого выбора нет");
-            System.out.println("Такого выбора нет");
+                return shapeFactory.createShape("Круг", color, size);
+            case "Квадрат":
+                return shapeFactory.createShape("Квадрат", color, size);
+            case "Прямоугольник":
+                return shapeFactory.createShape("Прямоугольник", color, size*2, size);
+            case "Пятиугольник":
+                return shapeFactory.createShape("Пятиугольник", color, size);
+            case "Треугольник":
+                return shapeFactory.createShape("Треугольник", color, size, size);
+            default:
+                return null;
         }
     }
 
@@ -151,81 +63,81 @@ public class HelloController {
     public void clearCanvas(ActionEvent actionEvent) {
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         shapes.clear();
-        figure_firstlab.setText(null);
-        proverka_storon.setText(null);
+        undoStack.clear();
+        shapeQueue.clear();
+        shapeCountMap.clear();
     }
 
     @FXML
-    public void onBegin(MouseEvent event) {
-        // Логика выбора фигуры
-        initialClickX = event.getX();
-        initialClickY = event.getY();
+    private void showAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
 
-        Shape selectedShape = getShapeAt(initialClickX, initialClickY);
-        if (selectedShape != null) {
-            Memento temp = new Memento(selectedShape);  // Создаем снимок
+    // Обработчик для нажатия мыши
+    @FXML
+    private void onMousePressed(MouseEvent event) {
+        isDrawing = true;
+        onMouseDragged(event);
+    }
 
-            if (isShiftPressed) {
-                // Если Shift зажат, добавляем фигуру в список выделенных
-                selectedShapes.add(temp);
+    // Обработчик для отпускания мыши
+    @FXML
+    private void onMouseReleased(MouseEvent event) {
+        isDrawing = false;
+        currentShape = null;
+    }
+
+    // Обработчик для движения мыши при зажатой клавише
+    @FXML
+    private void onMouseDragged(MouseEvent event) {
+        if (isDrawing) {
+            String shapeName = shapeListView.getSelectionModel().getSelectedItem(); // Получаем выбранное название фигуры
+            Color color = colorPicker.getValue(); // Получаем цвет
+            double size = Double.parseDouble(sizeInp.getText()); // Получаем размер фигуры
+
+            if (currentShape == null) {
+                currentShape = drawShape(shapeName, color, size);
+            }
+
+            if (currentShape != null) {
+                // Устанавливаем позицию фигуры на место курсора
+                currentShape.setPosition(event.getX(), event.getY());
+                currentShape.draw(gc);
+
+                // Добавляем фигуру в список и стек для отмены
+                shapes.add(currentShape);
+                undoStack.push(currentShape);
+
+                // Обновляем статистику
+                shapeQueue.add(shapeName);
+                shapeCountMap.put(shapeName, shapeCountMap.getOrDefault(shapeName, 0) + 1);
+
+                // Создаем новую фигуру для следующего рисования
+                currentShape = drawShape(shapeName, color, size);
             } else {
-                // Если Shift не зажат, очищаем список и добавляем одну фигуру
-                selectedShapes.clear();
-                selectedShapes.add(temp);
+                showAlert("Ошибка", "Неверное название фигуры.");
             }
+        }
+    }
 
-            caretaker.saveState(temp);  // Сохраняем состояние
-            temp.initState();  // Выделяем фигуру
+    @FXML
+    public void onUndo() {
+        if (!undoStack.isEmpty()) {
+            Shape lastShape = undoStack.pop();
+            shapes.remove(lastShape);
             redraw();
         }
     }
 
     @FXML
-    public void onDrag(MouseEvent event) {
-        // Вычисляем смещение по X и Y для корректного перетаскивания
-        double offsetX = event.getX() - initialClickX;
-        double offsetY = event.getY() - initialClickY;
-
-        // Перемещаем все выделенные фигуры
-        if (!selectedShapes.isEmpty()) {
-            for (Memento temp : selectedShapes) {
-                Shape draggedShape = temp.getShape();
-                draggedShape.relocate(draggedShape.getX() + offsetX, draggedShape.getY() + offsetY);  // Перемещаем фигуру
-            }
-            redraw();
-        }
-
-        // Обновляем координаты клика для плавного перетаскивания
-        initialClickX = event.getX();
-        initialClickY = event.getY();
-    }
-
-    @FXML
-    public void onEnd(MouseEvent event) {
-        // Восстанавливаем состояние фигур после завершения перетаскивания
-        if (!selectedShapes.isEmpty()) {
-            for (Memento temp : selectedShapes) {
-                temp.restore();
-                caretaker.saveState(temp);  // Сохраняем текущее состояние
-            }
-            redraw();
-        }
-    }
-
-    private Shape getShapeAt(double x, double y) {
-        // Проверка на попадание клика по любой фигуре
-        for (Shape shape : shapes) {
-            if (shape.isInside(x, y)) {
-                return shape;
-            }
-        }
-        return null;  // Если ни одна фигура не была выбрана
-    }
-
     private void redraw() {
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         for (Shape shape : shapes) {
-            shape.draw(gc);  // Перерисовываем все фигуры
+            shape.draw(gc);
         }
     }
 }

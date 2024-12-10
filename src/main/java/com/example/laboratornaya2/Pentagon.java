@@ -4,39 +4,39 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
 public class Pentagon extends Shape{
-    public Pentagon(Color color){
-        super(color);
-    }
+    private double side;
 
-    @Override
-    boolean isInside(double x, double y) {
-        return false;
+    public Pentagon(Color color, double side){
+        super(color);
+        this.side = side;
     }
 
     @Override
     double area(){
-        return 0;
+        double apothem = side / (2 * Math.tan(Math.PI / 5));
+        return 5 * side * apothem / 2;
     }
 
-    @Override
-    double perimeter(){
-        return 0;
-    }
-
-    @Override
-    public String toString(){
-        return null;
-    }
     @Override
     public void draw(GraphicsContext gr){
         gr.setFill(color);
-        double[] xPoints = { 200, 240, 220, 180, 160 };
-        double[] yPoints = { 100, 150, 200, 200, 150 };
+        double angle = Math.toRadians(72);
+        double[] xPoints = new double[5];
+        double[] yPoints = new double[5];
+        for (int i = 0; i < 5; i++) {
+            xPoints[i] = x + side * Math.cos(angle * i);
+            yPoints[i] = y + side * Math.sin(angle * i);
+        }
         gr.fillPolygon(xPoints, yPoints, 5);
     }
 
     @Override
     public String descriptor(){
         return "Пятиугольник";
+    }
+
+    @Override
+    public Shape clone() {
+        return new Pentagon(color, side);
     }
 }
