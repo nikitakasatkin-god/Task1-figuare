@@ -1,42 +1,40 @@
 package com.example.laboratornaya2;
 
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 
-public class Pentagon extends Shape{
+public class Pentagon extends Shape {
     private double side;
 
-    public Pentagon(Color color, double side){
-        super(color);
+    public Pentagon(double side, Paint color) {
+        super(side, color);
         this.side = side;
+        this.type = "Pentagon";
     }
 
     @Override
-    double area(){
-        double apothem = side / (2 * Math.tan(Math.PI / 5));
-        return 5 * side * apothem / 2;
-    }
-
-    @Override
-    public void draw(GraphicsContext gr){
-        gr.setFill(color);
-        double angle = Math.toRadians(72);
+    public void draw(GraphicsContext gc, double x, double y, double opacity) {
+        this.x = x;
+        this.y = y;
+        gc.setFill(color);
+        gc.setGlobalAlpha(opacity); // Устанавливаем прозрачность
         double[] xPoints = new double[5];
         double[] yPoints = new double[5];
+        double angle = Math.PI / 180 * 72;
+        double radius = side / (2 * Math.sin(Math.PI / 5));
+
         for (int i = 0; i < 5; i++) {
-            xPoints[i] = x + side * Math.cos(angle * i);
-            yPoints[i] = y + side * Math.sin(angle * i);
+            xPoints[i] = x + radius * Math.cos(angle * i);
+            yPoints[i] = y + radius * Math.sin(angle * i);
         }
-        gr.fillPolygon(xPoints, yPoints, 5);
+
+        gc.fillPolygon(xPoints, yPoints, 5);
+        gc.strokePolygon(xPoints, yPoints, 5); // Добавляем отрисовку контура
+        gc.setGlobalAlpha(1.0); // Сбрасываем прозрачность
     }
 
     @Override
-    public String descriptor(){
-        return "Пятиугольник";
-    }
-
-    @Override
-    public Shape clone() {
-        return new Pentagon(color, side);
+    public String toString() {
+        return "Pentagon";
     }
 }

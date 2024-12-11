@@ -1,34 +1,27 @@
 package com.example.laboratornaya2;
 
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 
-public class Square extends Shape{
-    private double side;
-
-    public Square(Color color, double side){
-        super(color);
-        this.side = side;
+public class Square extends Shape {
+    public Square(double size, Paint color) {
+        super(size, color);
+        this.type = "Square";
     }
 
     @Override
-    double area(){
-        return side * side;
-    }
-
-    @Override
-    public void draw(GraphicsContext gr){
+    public void draw(GraphicsContext gr, double x, double y, double opacity) {
+        this.x = x;
+        this.y = y;
         gr.setFill(color);
-        gr.fillRect(x, y, side, side);
+        gr.setGlobalAlpha(opacity); // Устанавливаем прозрачность
+        gr.fillRect(x - size / 2, y - size / 2, size, size);
+        gr.strokeRect(x - size / 2, y - size / 2, size, size); // Добавляем отрисовку контура
+        gr.setGlobalAlpha(1.0); // Сбрасываем прозрачность
     }
 
     @Override
-    public String descriptor(){
-        return "Квадрат";
-    }
-
-    @Override
-    public Shape clone() {
-        return new Square(color, side);
+    public String toString() {
+        return "Square";
     }
 }

@@ -1,158 +1,234 @@
 package com.example.laboratornaya2;
 
+import javafx.animation.AnimationTimer;
 import javafx.collections.FXCollections;
-import javafx.event.ActionEvent;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.*;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ColorPicker;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.ListView;
+import javafx.scene.control.SelectionMode;
+import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.CycleMethod;
+import javafx.scene.paint.ImagePattern;
+import javafx.scene.paint.LinearGradient;
+import javafx.scene.paint.Paint;
+import javafx.scene.paint.Stop;
+import javafx.scene.image.Image;
 
-import java.util.*;
+import java.net.URL;
+import java.util.ResourceBundle;
+import java.util.Stack;
 
-public class HelloController {
+public class HelloController implements Initializable {
+    @FXML
+    private ListView<Shape> listView;
+
+    private Stack<Shape> shapeStack = new Stack<>();
+    private Stack<Shape> redoStack = new Stack<>();
+
     @FXML
     private Canvas canvas;
-    @FXML
-    private ListView<String> shapeListView;
-    @FXML
-    private TextField sizeInp;
-    @FXML
-    private ColorPicker colorPicker;
 
-    private ShapeFactory shapeFactory = new ShapeFactory();
-    public GraphicsContext gc;
-    private List<Shape> shapes = new ArrayList<>();  // Список всех фигур
-    private Stack<Shape> undoStack = new Stack<>();
-    private Stack<Shape> redoStack = new Stack<>();
-    private PriorityQueue<String> shapeQueue = new PriorityQueue<>();
-    private Map<String, Integer> shapeCountMap = new HashMap<>();
+    @FXML
+    private TextField sizeField;
 
+    @FXML
+    private ColorPicker outlineColorPicker;
+
+    @FXML
+    private TextField outlineSizeField;
+
+    @FXML
+    private ComboBox<String> fillTypeComboBox;
+
+    @FXML
+    private VBox solidColorBox;
+
+    @FXML
+    private ColorPicker solidColorPicker;
+
+    @FXML
+    private VBox gradientColorBox;
+
+    @FXML
+    private ColorPicker gradientColorPicker1;
+
+    @FXML
+    private ColorPicker gradientColorPicker2;
+
+    @FXML
+    private VBox patternColorBox;
+
+    @FXML
+    private CheckBox animationCheckBox;
+
+    private ObservableList<Shape> items;
     private boolean isDrawing = false;
-    private Shape currentShape = null;
+    private double currentSize = 50; // Переменная для хранения текущего размера
+    private double opacity = 1.0;
+    private boolean increasing = false;
+    private AnimationTimer timer;
 
-    @FXML
-    public void initialize() {
-        gc = canvas.getGraphicsContext2D();
-        shapeListView.setItems(FXCollections.observableArrayList(
-                "Линия", "Круг", "Квадрат", "Прямоугольник", "Пятиугольник", "Треугольник"
-        ));
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        Rectangle rectangle = new Rectangle(currentSize, Color.RED);
+        Circle circle = new Circle(currentSize, new Color(0, 0, 1, 0.5)); // Создаем синий цвет с 50% прозрачностью
+        Square square = new Square(currentSize, Color.GREEN);
+        Pentagon pentagon = new Pentagon(currentSize, Color.YELLOW);
+        Triangle triangle = new Triangle(currentSize, Color.ORANGE);
+
+        items = FXCollections.observableArrayList(rectangle, circle, square, pentagon, triangle);
+        listView.setItems(items);
+
+        listView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+
+        // Настройка видимости элементов управления в зависимости от выбранного типа заливки
+        fillTypeComboBox.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+            updateVisibility(newVal);
+        });
+
+        canvas.addEventHandler(MouseEvent.MOUSE_PRESSED, this::onMousePressed);
+        canvas.addEventHandler(MouseEvent.MOUSE_DRAGGED, this::onMouseDragged);
+        canvas.addEventHandler(MouseEvent.MOUSE_RELEASED, this::onMouseReleased);
+
+        // Инициализация видимости элементов управления
+        updateVisibility(fillTypeComboBox.getValue());
+
+        // Инициализация AnimationTimer
+        timer = new AnimationTimer() {
+            @Override
+            public void handle(long now) {
+                updateOpacity();
+                redrawCanvas();
+            }
+        };
+        timer.start();
     }
 
-    @FXML
-    private Shape drawShape(String shapeName, Color color, double size) {
-        switch (shapeName) {
-            case "Линия":
-                return shapeFactory.createShape("Линия", color, size);
-            case "Круг":
-                return shapeFactory.createShape("Круг", color, size);
-            case "Квадрат":
-                return shapeFactory.createShape("Квадрат", color, size);
-            case "Прямоугольник":
-                return shapeFactory.createShape("Прямоугольник", color, size*2, size);
-            case "Пятиугольник":
-                return shapeFactory.createShape("Пятиугольник", color, size);
-            case "Треугольник":
-                return shapeFactory.createShape("Треугольник", color, size, size);
-            default:
-                return null;
-        }
+    private void updateVisibility(String fillType) {
+        solidColorBox.setVisible("solid".equals(fillType));
+        gradientColorBox.setVisible("gradient".equals(fillType));
+        patternColorBox.setVisible("pattern".equals(fillType));
     }
 
-    @FXML
-    public void clearCanvas(ActionEvent actionEvent) {
-        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
-        shapes.clear();
-        undoStack.clear();
-        redoStack.clear();
-        shapeQueue.clear();
-        shapeCountMap.clear();
-    }
-
-    @FXML
-    private void showAlert(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
-
-    // Обработчик для нажатия мыши
-    @FXML
     private void onMousePressed(MouseEvent event) {
         isDrawing = true;
-        redoStack.clear(); // Очищаем redoStack при начале нового действия
-        onMouseDragged(event);
+        drawShape(event);
     }
 
-    // Обработчик для отпускания мыши
-    @FXML
-    private void onMouseReleased(MouseEvent event) {
-        isDrawing = false;
-        currentShape = null;
-    }
-
-    // Обработчик для движения мыши при зажатой клавише
-    @FXML
     private void onMouseDragged(MouseEvent event) {
         if (isDrawing) {
-            String shapeName = shapeListView.getSelectionModel().getSelectedItem(); // Получаем выбранное название фигуры
-            Color color = colorPicker.getValue(); // Получаем цвет
-            double size = Double.parseDouble(sizeInp.getText()); // Получаем размер фигуры
+            drawShape(event);
+        }
+    }
 
-            if (currentShape == null) {
-                currentShape = drawShape(shapeName, color, size);
+    private void onMouseReleased(MouseEvent event) {
+        isDrawing = false;
+        redoStack.clear(); // Очищаем redoStack, когда начинаем рисовать новую фигуру
+    }
+
+    public void drawShape(MouseEvent event) {
+        int selectedIndex = listView.getSelectionModel().getSelectedIndex();
+
+        if (selectedIndex != -1) {
+            Shape selectedShape = items.get(selectedIndex);
+            Shape newShape = selectedShape.clone();
+            newShape.size = currentSize;
+
+            // Установка цвета заливки после клонирования
+            String fillType = fillTypeComboBox.getValue();
+            if ("solid".equals(fillType)) {
+                newShape.color = solidColorPicker.getValue();
+            } else if ("gradient".equals(fillType)) {
+                newShape.color = new LinearGradient(0, 0, 1, 1, true, CycleMethod.NO_CYCLE,
+                        new Stop(0, gradientColorPicker1.getValue()), new Stop(1, gradientColorPicker2.getValue()));
+            } else if ("pattern".equals(fillType)) {
+                newShape.color = new ImagePattern(new Image("file:/C:/Учёба/3 курс 5 семестр/java/JL-VSTU/LT-6/src/main/resources/com/example/task6/orig.jpg"));
             }
 
-            if (currentShape != null) {
-                // Устанавливаем позицию фигуры на место курсора
-                currentShape.setPosition(event.getX(), event.getY());
-                currentShape.draw(gc);
+            // Применение декораторов
+            newShape = new ColorOutlineDecorator(newShape, outlineColorPicker.getValue()); // Цвет контура
+            newShape = new SizeOutlineDecorator(newShape, Double.parseDouble(outlineSizeField.getText())); // Размер контура
 
-                // Добавляем фигуру в список и стек для отмены
-                shapes.add(currentShape);
-                undoStack.push(currentShape);
-                redoStack.push(currentShape);
+            newShape.x = event.getX();
+            newShape.y = event.getY();
 
-                // Обновляем статистику
-                shapeQueue.add(shapeName);
-                shapeCountMap.put(shapeName, shapeCountMap.getOrDefault(shapeName, 0) + 1);
+            // Устанавливаем значение hasAnimation для новой фигуры
+            newShape.setHasAnimation(animationCheckBox.isSelected());
 
-                // Создаем новую фигуру для следующего рисования
-                currentShape = drawShape(shapeName, color, size);
-            } else {
-                showAlert("Ошибка", "Неверное название фигуры.");
-            }
+            newShape.draw(canvas.getGraphicsContext2D(), event.getX(), event.getY(), animationCheckBox.isSelected() ? opacity : 1.0);
+
+            shapeStack.push(newShape);
+        } else {
+            System.out.println("No shape selected.");
         }
     }
 
     @FXML
-    public void onUndo() {
-        if (!undoStack.isEmpty()) {
-            Shape lastShape = undoStack.pop();
-            shapes.remove(lastShape);
-            redoStack.push(lastShape); // Добавляем в redoStack
-            redraw();
+    public void applySize() {
+        try {
+            currentSize = Double.parseDouble(sizeField.getText());
+            System.out.println("Size applied: " + currentSize);
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid size input.");
+        }
+    }
+
+    public void cleanCan() {
+        GraphicsContext gr = canvas.getGraphicsContext2D();
+        gr.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+
+        shapeStack.clear();
+        redoStack.clear();
+    }
+
+    @FXML
+    public void undo() {
+        if (!shapeStack.isEmpty()) {
+            Shape lastShape = shapeStack.pop();
+            redoStack.push(lastShape);
+            redrawCanvas();
         }
     }
 
     @FXML
     public void redo() {
         if (!redoStack.isEmpty()) {
-            Shape lastShape = redoStack.pop();
-            shapes.add(lastShape);
-            undoStack.push(lastShape); // Возвращаем в undoStack
-            redraw();
+            Shape lastUndoneShape = redoStack.pop();
+            shapeStack.push(lastUndoneShape);
+            redrawCanvas();
         }
     }
 
-    @FXML
-    private void redraw() {
-        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
-        for (Shape shape : shapes) {
-            shape.draw(gc);
+    private void redrawCanvas() {
+        GraphicsContext gr = canvas.getGraphicsContext2D();
+        gr.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+        for (Shape shape : shapeStack) {
+            shape.draw(gr, shape.getX(), shape.getY(), shape.hasAnimation() ? opacity : 1.0);
+        }
+    }
+
+    private void updateOpacity() {
+        if (increasing) {
+            opacity += 0.02;
+            if (opacity >= 1.0) {
+                opacity = 1.0;
+                increasing = false;
+            }
+        } else {
+            opacity -= 0.02;
+            if (opacity <= 0.0) {
+                opacity = 0.0;
+                increasing = true;
+            }
         }
     }
 }
