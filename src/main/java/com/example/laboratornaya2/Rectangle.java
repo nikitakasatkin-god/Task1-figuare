@@ -1,36 +1,27 @@
 package com.example.laboratornaya2;
 
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 
-class Rectangle extends Shape{
-    private double length;
-    private double width;
-
-    public Rectangle(Color color, double length, double width){
-        super(color);
-        this.length = length;
-        this.width = width;
+public class Rectangle extends Shape {
+    public Rectangle(double size, Paint color) {
+        super(size, color);
+        this.type = "Rectangle";
     }
 
     @Override
-    double area(){
-        return length * width;
-    }
-
-    @Override
-    public void draw(GraphicsContext gr){
+    public void draw(GraphicsContext gr, double x, double y, double opacity) {
+        this.x = x;
+        this.y = y;
         gr.setFill(color);
-        gr.fillRect(x, y, length, width);
+        gr.setGlobalAlpha(opacity); // Устанавливаем прозрачность
+        gr.fillRect(x - size / 2, y - size / 2, size * 1.5, size);
+        gr.strokeRect(x - size / 2, y - size / 2, size * 1.5, size); // Добавляем отрисовку контура
+        gr.setGlobalAlpha(1.0); // Сбрасываем прозрачность
     }
 
     @Override
-    public String descriptor(){
-        return null;
-    }
-
-    @Override
-    public Shape clone() {
-        return new Rectangle(color, length, width);
+    public String toString() {
+        return "Rectangle";
     }
 }
