@@ -3,32 +3,29 @@ package com.example.laboratornaya2;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
-public class Circle extends Shape{
-    private double radius;
+public class Circle extends Shape {
+    private final double radius;
 
-    public Circle(Color color, double radius){
-        super(color);
+    public Circle(Color color, double x, double y, double radius) {
+        super(color, x, y);
         this.radius = radius;
     }
 
     @Override
-    double area(){
-        return Math.PI * radius * radius;
+    public void draw(GraphicsContext gc) {
+        gc.setFill(color);
+        gc.fillOval(x - radius, y - radius, 2 * radius, 2 * radius);
     }
 
     @Override
-    public void draw(GraphicsContext gr){
-        gr.setFill(color);
-        gr.fillOval(x - radius, y - radius, 2 * radius, radius * 2);
+    public boolean contains(double x, double y) {
+        double dx = x - this.x;
+        double dy = y - this.y;
+        return dx * dx + dy * dy <= radius * radius;
     }
 
     @Override
-    public String descriptor(){
-        return "Круг";
-    }
-
-    @Override
-    public Shape clone() {
-        return new Circle(color, radius);
+    public Circle clone() {
+        return new Circle(color, x, y, radius);
     }
 }
