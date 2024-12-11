@@ -5,70 +5,29 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox alignment="CENTER" prefHeight="696.0" prefWidth="700.0" spacing="20.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.laboratornaya2.HelloController">
-    <padding>
-        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-    </padding>
+<VBox alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.laboratornaya2.HelloController">
+   <padding><Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/></padding>
    <children>
-      <Canvas fx:id="canvas" height="322.0" onMouseDragged="#onMouseDragged" onMousePressed="#onMousePressed" onMouseReleased="#onMouseReleased" width="637.0">
-         <VBox.margin>
-            <Insets />
-         </VBox.margin></Canvas>
-      <VBox prefHeight="208.0" prefWidth="660.0">
-         <children>
-            <HBox prefHeight="34.0" prefWidth="660.0">
-               <children>
-                  <Button fx:id="clearCanv" mnemonicParsing="false" onAction="#clearCanvas" text="Очистить" />
-                  <Button fx:id="buttonCancel" mnemonicParsing="false" onAction="#onUndo" text="Назад">
-                     <HBox.margin>
-                        <Insets left="10.0" />
-                     </HBox.margin>
-                  </Button>
-                  <Button mnemonicParsing="false" onAction="#redo" text="Далее">
-                     <HBox.margin>
-                        <Insets left="10.0" />
-                     </HBox.margin>
-                  </Button>
-               </children>
-               <padding>
-                  <Insets left="230.0" right="227.0" />
-               </padding>
-            </HBox>
-            <VBox prefHeight="187.0" prefWidth="660.0">
-               <children>
-                  <ListView fx:id="shapeListView" prefHeight="208.0" prefWidth="660.0" />
-                  <Label fx:id="proverka_storon" />
-                  <HBox prefHeight="100.0" prefWidth="200.0">
-                     <children>
-                        <Label text="Введите размер фигуры:" />
-                        <TextField fx:id="sizeInp" maxWidth="-Infinity" prefHeight="26.0" prefWidth="100.0">
-                           <HBox.margin>
-                              <Insets left="10.0" />
-                           </HBox.margin>
-                        </TextField>
-                        <Label text="Выберите цвет:">
-                           <padding>
-                              <Insets left="10.0" />
-                           </padding>
-                        </Label>
-                        <ColorPicker fx:id="colorPicker" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="26.0" prefWidth="116.0">
-                           <HBox.margin>
-                              <Insets left="10.0" />
-                           </HBox.margin>
-                           <padding>
-                              <Insets left="20.0" />
-                           </padding>
-                        </ColorPicker>
-                     </children>
-                  </HBox>
-               </children>
-               <VBox.margin>
-                  <Insets top="10.0" />
-               </VBox.margin>
-            </VBox>
-         </children>
-      </VBox>
+      <Canvas fx:id="canvas" height="400" width="600"
+              onMouseDragged="#onMouseDragged"
+              onMousePressed="#onMousePressed"
+              onMouseReleased="#onMouseReleased"/>
+
+      <HBox spacing="10" alignment="CENTER">
+         <Button text="Очистить" onAction="#clearCanvas"/>
+         <Button text="Назад" onAction="#onUndo"/>
+         <Button text="Вперед" onAction="#onRedo"/>
+         <Button fx:id="selectButton" text="Выделить" onAction="#onSelectButtonClick"/>
+         <Button fx:id="combineButton" text="Объединить" onAction="#onCombineButtonClick"/>
+      </HBox>
+
+      <ListView fx:id="shapeListView" prefHeight="100" prefWidth="300"/>
+
+      <HBox spacing="10" alignment="CENTER">
+         <Label text="Размер:"/>
+         <TextField fx:id="sizeInp" prefWidth="50" text="20"/>
+         <Label text="Цвет:"/>
+         <ColorPicker fx:id="colorPicker"/>
+      </HBox>
    </children>
-
-
 </VBox>

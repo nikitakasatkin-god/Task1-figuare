@@ -1,158 +1,236 @@
 package com.example.laboratornaya2;
 
 import javafx.collections.FXCollections;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
-
 import java.util.*;
 
 public class HelloController {
-    @FXML
-    private Canvas canvas;
-    @FXML
-    private ListView<String> shapeListView;
-    @FXML
-    private TextField sizeInp;
-    @FXML
-    private ColorPicker colorPicker;
+    private enum Mode { DRAW, SELECT, MOVE }
 
-    private ShapeFactory shapeFactory = new ShapeFactory();
-    public GraphicsContext gc;
-    private List<Shape> shapes = new ArrayList<>();  // Список всех фигур
-    private Stack<Shape> undoStack = new Stack<>();
-    private Stack<Shape> redoStack = new Stack<>();
-    private PriorityQueue<String> shapeQueue = new PriorityQueue<>();
-    private Map<String, Integer> shapeCountMap = new HashMap<>();
+    @FXML private Canvas canvas;
+    @FXML private ListView<String> shapeListView;
+    @FXML private TextField sizeInp;
+    @FXML private ColorPicker colorPicker;
+    @FXML private Button selectButton;
+    @FXML private Button combineButton;
 
-    private boolean isDrawing = false;
-    private Shape currentShape = null;
+    private GraphicsContext gc;
+    private final List<Shape> allShapes = new ArrayList<>();
+    private final Stack<List<Shape>> undoStack = new Stack<>();
+    private final Stack<List<Shape>> redoStack = new Stack<>();
+
+    private Mode currentMode = Mode.DRAW;
+    private double startX, startY;
+    private CompositeShape currentGroup;
+    private final List<Shape> selectedShapes = new ArrayList<>();
 
     @FXML
     public void initialize() {
         gc = canvas.getGraphicsContext2D();
         shapeListView.setItems(FXCollections.observableArrayList(
-                "Линия", "Круг", "Квадрат", "Прямоугольник", "Пятиугольник", "Треугольник"
+                "Линия", "Круг", "Квадрат", "Прямоугольник",
+                "Пятиугольник", "Треугольник"
         ));
+        saveState();
     }
 
     @FXML
-    private Shape drawShape(String shapeName, Color color, double size) {
-        switch (shapeName) {
-            case "Линия":
-                return shapeFactory.createShape("Линия", color, size);
-            case "Круг":
-                return shapeFactory.createShape("Круг", color, size);
-            case "Квадрат":
-                return shapeFactory.createShape("Квадрат", color, size);
-            case "Прямоугольник":
-                return shapeFactory.createShape("Прямоугольник", color, size*2, size);
-            case "Пятиугольник":
-                return shapeFactory.createShape("Пятиугольник", color, size);
-            case "Треугольник":
-                return shapeFactory.createShape("Треугольник", color, size, size);
-            default:
-                return null;
+    private void onSelectButtonClick() {
+        currentMode = Mode.SELECT;
+        selectedShapes.clear();
+        currentGroup = null;
+    }
+
+    @FXML
+    private void onCombineButtonClick() {
+        if (!selectedShapes.isEmpty()) {
+            currentGroup = new CompositeShape();
+            selectedShapes.forEach(currentGroup::addChild);
+            allShapes.removeAll(selectedShapes);
+            allShapes.add(currentGroup);
+            selectedShapes.clear();
+            saveState();
+
+            // Убираем выделение и переключаемся в режим перемещения
+            currentMode = Mode.MOVE;
+            redrawCanvas(); // Просто перерисовываем без каких-либо рамок
         }
     }
 
-    @FXML
-    public void clearCanvas(ActionEvent actionEvent) {
-        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
-        shapes.clear();
-        undoStack.clear();
-        redoStack.clear();
-        shapeQueue.clear();
-        shapeCountMap.clear();
-    }
-
-    @FXML
-    private void showAlert(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
-
-    // Обработчик для нажатия мыши
     @FXML
     private void onMousePressed(MouseEvent event) {
-        isDrawing = true;
-        redoStack.clear(); // Очищаем redoStack при начале нового действия
-        onMouseDragged(event);
+        startX = event.getX();
+        startY = event.getY();
+
+        switch (currentMode) {
+            case SELECT:
+                // Начало выделения области
+                break;
+
+            case MOVE:
+                // Проверяем, кликнули ли на группу для перемещения
+                if (currentGroup != null && currentGroup.contains(startX, startY)) {
+                    break;
+                }
+                // Если кликнули не на группу, переключаемся в режим рисования
+                currentMode = Mode.DRAW;
+
+            case DRAW:
+                startDrawing(startX, startY);
+                break;
+        }
     }
 
-    // Обработчик для отпускания мыши
-    @FXML
-    private void onMouseReleased(MouseEvent event) {
-        isDrawing = false;
-        currentShape = null;
-    }
-
-    // Обработчик для движения мыши при зажатой клавише
     @FXML
     private void onMouseDragged(MouseEvent event) {
-        if (isDrawing) {
-            String shapeName = shapeListView.getSelectionModel().getSelectedItem(); // Получаем выбранное название фигуры
-            Color color = colorPicker.getValue(); // Получаем цвет
-            double size = Double.parseDouble(sizeInp.getText()); // Получаем размер фигуры
+        double currentX = event.getX();
+        double currentY = event.getY();
 
-            if (currentShape == null) {
-                currentShape = drawShape(shapeName, color, size);
-            }
+        switch (currentMode) {
+            case SELECT:
+                drawSelectionRect(startX, startY, currentX, currentY);
+                break;
 
-            if (currentShape != null) {
-                // Устанавливаем позицию фигуры на место курсора
-                currentShape.setPosition(event.getX(), event.getY());
-                currentShape.draw(gc);
+            case MOVE:
+                if (currentGroup != null) {
+                    moveGroup(currentX, currentY);
+                }
+                break;
 
-                // Добавляем фигуру в список и стек для отмены
-                shapes.add(currentShape);
-                undoStack.push(currentShape);
-                redoStack.push(currentShape);
-
-                // Обновляем статистику
-                shapeQueue.add(shapeName);
-                shapeCountMap.put(shapeName, shapeCountMap.getOrDefault(shapeName, 0) + 1);
-
-                // Создаем новую фигуру для следующего рисования
-                currentShape = drawShape(shapeName, color, size);
-            } else {
-                showAlert("Ошибка", "Неверное название фигуры.");
-            }
+            case DRAW:
+                continueDrawing(currentX, currentY);
+                break;
         }
     }
 
     @FXML
-    public void onUndo() {
-        if (!undoStack.isEmpty()) {
-            Shape lastShape = undoStack.pop();
-            shapes.remove(lastShape);
-            redoStack.push(lastShape); // Добавляем в redoStack
-            redraw();
+    private void onMouseReleased(MouseEvent event) {
+        switch (currentMode) {
+            case SELECT:
+                completeSelection(startX, startY, event.getX(), event.getY());
+                break;
+
+            case MOVE:
+                saveState();
+                redrawCanvas();
+                break;
+
+            case DRAW:
+                saveState();
+                redrawCanvas();
+                break;
+        }
+    }
+
+    private void startDrawing(double x, double y) {
+        String shapeType = shapeListView.getSelectionModel().getSelectedItem();
+        Color color = colorPicker.getValue();
+        double size = Double.parseDouble(sizeInp.getText());
+
+        Shape shape = ShapeFactory.createShape(shapeType, color, x, y, size);
+        if (shape != null) {
+            allShapes.add(shape);
+            redrawCanvas();
+        }
+    }
+
+    private void continueDrawing(double x, double y) {
+        if (!allShapes.isEmpty()) {
+            Shape lastShape = allShapes.get(allShapes.size() - 1);
+            lastShape.setPosition(x, y);
+            allShapes.add(lastShape.clone());
+            redrawCanvas();
+        }
+    }
+
+    private void drawSelectionRect(double x1, double y1, double x2, double y2) {
+        redrawCanvas(); // Сначала рисуем все фигуры
+        gc.setStroke(Color.BLUE);
+        gc.setLineDashes(5);
+        gc.strokeRect(
+                Math.min(x1, x2), Math.min(y1, y2),
+                Math.abs(x2 - x1), Math.abs(y2 - y1)
+        );
+        gc.setLineDashes(null);
+    }
+
+    private void completeSelection(double x1, double y1, double x2, double y2) {
+        double minX = Math.min(x1, x2);
+        double maxX = Math.max(x1, x2);
+        double minY = Math.min(y1, y2);
+        double maxY = Math.max(y1, y2);
+
+        selectedShapes.clear();
+        allShapes.forEach(shape -> {
+            if (shape.getX() >= minX && shape.getX() <= maxX &&
+                    shape.getY() >= minY && shape.getY() <= maxY) {
+                selectedShapes.add(shape);
+            }
+        });
+
+        // Перерисовываем без прямоугольника выделения
+        redrawCanvas();
+    }
+
+    private void moveGroup(double x, double y) {
+        double dx = x - startX;
+        double dy = y - startY;
+        startX = x;
+        startY = y;
+        currentGroup.setPosition(currentGroup.getX() + dx, currentGroup.getY() + dy);
+    }
+
+    private void saveState() {
+        List<Shape> state = new ArrayList<>();
+        allShapes.forEach(shape -> state.add(shape.clone()));
+        undoStack.push(state);
+        redoStack.clear();
+    }
+
+    @FXML
+    private void onUndo() {
+        if (undoStack.size() > 1) {
+            redoStack.push(undoStack.pop());
+            allShapes.clear();
+            undoStack.peek().forEach(shape -> allShapes.add(shape.clone()));
+            currentGroup = null;
+            selectedShapes.clear();
+            redrawCanvas();
         }
     }
 
     @FXML
-    public void redo() {
+    private void onRedo() {
         if (!redoStack.isEmpty()) {
-            Shape lastShape = redoStack.pop();
-            shapes.add(lastShape);
-            undoStack.push(lastShape); // Возвращаем в undoStack
-            redraw();
+            undoStack.push(redoStack.pop());
+            allShapes.clear();
+            undoStack.peek().forEach(shape -> allShapes.add(shape.clone()));
+            currentGroup = null;
+            selectedShapes.clear();
+            redrawCanvas();
         }
     }
 
-    @FXML
-    private void redraw() {
+    private void redrawCanvas() {
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
-        for (Shape shape : shapes) {
-            shape.draw(gc);
-        }
+
+        // Рисуем все фигуры (включая группы, но без специальных рамок)
+        allShapes.forEach(shape -> shape.draw(gc));
+    }
+
+    @FXML
+    private void clearCanvas() {
+        allShapes.clear();
+        undoStack.clear();
+        redoStack.clear();
+        currentGroup = null;
+        selectedShapes.clear();
+        saveState();
+        redrawCanvas();
     }
 }

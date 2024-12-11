@@ -3,40 +3,38 @@ package com.example.laboratornaya2;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
-public class Pentagon extends Shape{
-    private double side;
+public class Pentagon extends Shape {
+    private final double side;
 
-    public Pentagon(Color color, double side){
-        super(color);
+    public Pentagon(Color color, double x, double y, double side) {
+        super(color, x, y);
         this.side = side;
     }
 
     @Override
-    double area(){
-        double apothem = side / (2 * Math.tan(Math.PI / 5));
-        return 5 * side * apothem / 2;
-    }
-
-    @Override
-    public void draw(GraphicsContext gr){
-        gr.setFill(color);
-        double angle = Math.toRadians(72);
+    public void draw(GraphicsContext gc) {
+        gc.setFill(color);
         double[] xPoints = new double[5];
         double[] yPoints = new double[5];
+
         for (int i = 0; i < 5; i++) {
-            xPoints[i] = x + side * Math.cos(angle * i);
-            yPoints[i] = y + side * Math.sin(angle * i);
+            double angle = 2 * Math.PI * i / 5 - Math.PI/2;
+            xPoints[i] = x + side * Math.cos(angle);
+            yPoints[i] = y + side * Math.sin(angle);
         }
-        gr.fillPolygon(xPoints, yPoints, 5);
+
+        gc.fillPolygon(xPoints, yPoints, 5);
     }
 
     @Override
-    public String descriptor(){
-        return "Пятиугольник";
+    public boolean contains(double x, double y) {
+        // проверка - попадание в ограничивающий круг
+        double radius = side * 0.85;
+        return Math.sqrt(Math.pow(x - this.x, 2) + Math.pow(y - this.y, 2)) <= radius;
     }
 
     @Override
-    public Shape clone() {
-        return new Pentagon(color, side);
+    public Pentagon clone() {
+        return new Pentagon(color, x, y, side);
     }
 }
