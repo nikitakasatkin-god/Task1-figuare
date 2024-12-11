@@ -19,7 +19,12 @@
             <HBox prefHeight="34.0" prefWidth="660.0">
                <children>
                   <Button fx:id="clearCanv" mnemonicParsing="false" onAction="#clearCanvas" text="Очистить" />
-                  <Button fx:id="buttonCancel" mnemonicParsing="false" onAction="#onUndo" text="Отменить действие">
+                  <Button fx:id="buttonCancel" mnemonicParsing="false" onAction="#onUndo" text="Назад">
+                     <HBox.margin>
+                        <Insets left="10.0" />
+                     </HBox.margin>
+                  </Button>
+                  <Button mnemonicParsing="false" onAction="#redo" text="Далее">
                      <HBox.margin>
                         <Insets left="10.0" />
                      </HBox.margin>
