@@ -25,6 +25,7 @@ public class HelloController {
     public GraphicsContext gc;
     private List<Shape> shapes = new ArrayList<>();  // Список всех фигур
     private Stack<Shape> undoStack = new Stack<>();
+    private Stack<Shape> redoStack = new Stack<>();
     private PriorityQueue<String> shapeQueue = new PriorityQueue<>();
     private Map<String, Integer> shapeCountMap = new HashMap<>();
 
@@ -64,6 +65,7 @@ public class HelloController {
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         shapes.clear();
         undoStack.clear();
+        redoStack.clear();
         shapeQueue.clear();
         shapeCountMap.clear();
     }
@@ -81,6 +83,7 @@ public class HelloController {
     @FXML
     private void onMousePressed(MouseEvent event) {
         isDrawing = true;
+        redoStack.clear(); // Очищаем redoStack при начале нового действия
         onMouseDragged(event);
     }
 
@@ -111,6 +114,7 @@ public class HelloController {
                 // Добавляем фигуру в список и стек для отмены
                 shapes.add(currentShape);
                 undoStack.push(currentShape);
+                redoStack.push(currentShape);
 
                 // Обновляем статистику
                 shapeQueue.add(shapeName);
@@ -129,6 +133,17 @@ public class HelloController {
         if (!undoStack.isEmpty()) {
             Shape lastShape = undoStack.pop();
             shapes.remove(lastShape);
+            redoStack.push(lastShape); // Добавляем в redoStack
+            redraw();
+        }
+    }
+
+    @FXML
+    public void redo() {
+        if (!redoStack.isEmpty()) {
+            Shape lastShape = redoStack.pop();
+            shapes.add(lastShape);
+            undoStack.push(lastShape); // Возвращаем в undoStack
             redraw();
         }
     }
