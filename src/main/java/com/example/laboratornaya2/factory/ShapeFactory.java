@@ -1,5 +1,6 @@
-package com.example.laboratornaya2;
+package com.example.laboratornaya2.factory;
 
+import com.example.laboratornaya2.model.*;
 import javafx.scene.paint.Color;
 
 public class ShapeFactory {

@@ -1,5 +1,8 @@
-package com.example.laboratornaya2;
+package com.example.laboratornaya2.controller;
 
+import com.example.laboratornaya2.composite.CompositeShape;
+import com.example.laboratornaya2.model.Shape;
+import com.example.laboratornaya2.factory.ShapeFactory;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;

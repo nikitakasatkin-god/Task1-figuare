@@ -1,4 +1,4 @@
-package com.example.laboratornaya2;
+package com.example.laboratornaya2.model;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;

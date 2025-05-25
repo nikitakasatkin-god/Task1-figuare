@@ -1,7 +1,7 @@
-package com.example.laboratornaya2;
+package com.example.laboratornaya2.composite;
 
+import com.example.laboratornaya2.model.Shape;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
 import java.util.List;
